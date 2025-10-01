@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: hotel_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: hotel_management
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: hotel_user
+      MYSQL_PASSWORD: hotel_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - hotel_network
+
+  # Laravel API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hotel_api
+    restart: unless-stopped
+    working_dir: /var/www
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=base64:your-app-key-here
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=hotel_management
+      - DB_USERNAME=hotel_user
+      - DB_PASSWORD=hotel_password
+    volumes:
+      - ./:/var/www
+      - ./storage/app/public:/var/www/storage/app/public
+    depends_on:
+      - mysql
+    ports:
+      - "8000:8000"
+    networks:
+      - hotel_network
+
+
+volumes:
+  mysql_data:
+
+networks:
+  hotel_network:
+    driver: bridge
