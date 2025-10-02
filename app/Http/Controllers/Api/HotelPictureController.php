@@ -34,7 +34,9 @@ class HotelPictureController extends Controller
         $filename = time() . '_' . $file->getClientOriginalName();
         $filepath = 'hotels/' . $filename;
         
-        $file->storeAs('public/hotels', $filename);
+        //$file->storeAs('public/hotels', $filename);
+        $file->storeAs('hotels', $filename, 'public');
+
         
         $nextPosition = $hotel->pictures()->max('position') + 1;
         
@@ -73,8 +75,8 @@ class HotelPictureController extends Controller
                 $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
                 $filepath = 'hotels/' . $filename;
                 
-                $file->storeAs('public/hotels', $filename);
-                
+                $file->storeAs('hotels', $filename, 'public');
+
                 $picture = HotelPicture::create([
                     'hotel_id' => $hotel->id,
                     'filepath' => $filepath,
@@ -143,8 +145,9 @@ class HotelPictureController extends Controller
          $hotel = Hotel::findOrFail($hotelId);
         $picture = $hotel->pictures()->findOrFail($pictureId);
         
-        if (Storage::exists('public/' . $picture->filepath)) {
-            Storage::delete('public/' . $picture->filepath);
+      
+        if (Storage::disk('public')->exists($picture->filepath)) {
+            Storage::disk('public')->delete($picture->filepath);
         }
         
         $picture->delete();

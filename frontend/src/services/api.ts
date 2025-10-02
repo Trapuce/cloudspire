@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Hotel, HotelFormData, HotelPicture, PaginatedResponse, ApiResponse } from "@/types/hotel";
+import { Hotel, HotelFormData, HotelPicture, PaginatedResponse, ApiResponse } from "@/types/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
@@ -11,6 +11,7 @@ const api = axios.create({
 });
 
 export const hotelApi = {
+  // Get all hotels with pagination and search
   getHotels: async (params?: {
     page?: number;
     per_page?: number;
@@ -22,16 +23,19 @@ export const hotelApi = {
     return response.data;
   },
 
+  // Get a single hotel by ID
   getHotel: async (id: number): Promise<ApiResponse<Hotel>> => {
     const response = await api.get(`/hotels/${id}`);
     return response.data;
   },
 
+  // Create a new hotel
   createHotel: async (data: HotelFormData): Promise<ApiResponse<Hotel>> => {
     const response = await api.post("/hotels", data);
     return response.data;
   },
 
+  // Update a hotel
   updateHotel: async (id: number, data: Partial<HotelFormData>): Promise<ApiResponse<Hotel>> => {
     const response = await api.put(`/hotels/${id}`, data);
     return response.data;
@@ -42,6 +46,7 @@ export const hotelApi = {
     return response.data;
   },
 
+ 
   uploadPicture: async (hotelId: number, file: File): Promise<ApiResponse<HotelPicture>> => {
     const formData = new FormData();
     formData.append("picture", file);
@@ -65,6 +70,7 @@ export const hotelApi = {
     return response.data;
   },
 
+  // Upload multiple pictures for a hotel
   uploadMultiplePictures: async (hotelId: number, files: File[]): Promise<ApiResponse<HotelPicture[]>> => {
     const formData = new FormData();
     files.forEach((file) => {
@@ -79,6 +85,7 @@ export const hotelApi = {
     return response.data;
   },
 
+  // Delete a picture
   deletePicture: async (hotelId: number, pictureId: number): Promise<ApiResponse<null>> => {
     const response = await api.delete(`/hotels/${hotelId}/pictures/${pictureId}`);
     return response.data;

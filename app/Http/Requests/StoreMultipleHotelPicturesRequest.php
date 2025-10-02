@@ -11,7 +11,7 @@ class StoreMultipleHotelPicturesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
