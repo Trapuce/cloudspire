@@ -53,8 +53,8 @@ class HotelController extends Controller
                 $perPage = 100; 
             }
 
-            //$hotels = $query->with('firstPicture')->paginate($perPage);
-            $hotels = $query->with(['pictures', 'firstPicture'])->paginate($perPage);
+            $hotels = $query->with('firstPicture')->paginate($perPage);
+           // $hotels = $query->with(['pictures', 'firstPicture'])->paginate($perPage);
 
             return response()->json([
                 'success' => true,
