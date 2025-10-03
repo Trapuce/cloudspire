@@ -53,9 +53,113 @@ class HotelSeeder extends Seeder
                 'max_capacity' => 200,
                 'price_per_night' => 249.99,
             ],
-       
+            [
+                'name' => 'Nice Beach Resort',
+                'address1' => '654 Promenade des Anglais',
+                'address2' => null,
+                'zipcode' => '06000',
+                'city' => 'Nice',
+                'country' => 'France',
+                'lat' => 43.7102,
+                'lng' => 7.2620,
+                'description' => 'Résort de luxe face à la mer Méditerranée.',
+                'max_capacity' => 180,
+                'price_per_night' => 399.99,
+            ],
+            [
+                'name' => 'Toulouse Business Hotel',
+                'address1' => '321 Place du Capitole',
+                'address2' => 'Suite 100',
+                'zipcode' => '31000',
+                'city' => 'Toulouse',
+                'country' => 'France',
+                'lat' => 43.6047,
+                'lng' => 1.4442,
+                'description' => 'Hôtel d\'affaires moderne au centre de Toulouse.',
+                'max_capacity' => 120,
+                'price_per_night' => 179.99,
+            ],
+            [
+                'name' => 'Nantes Historic Inn',
+                'address1' => '987 Château des Ducs',
+                'address2' => null,
+                'zipcode' => '44000',
+                'city' => 'Nantes',
+                'country' => 'France',
+                'lat' => 47.2184,
+                'lng' => -1.5536,
+                'description' => 'Auberge historique près du château des Ducs de Bretagne.',
+                'max_capacity' => 80,
+                'price_per_night' => 149.99,
+            ],
+            [
+                'name' => 'Strasbourg European Hotel',
+                'address1' => '147 Grande Île',
+                'address2' => null,
+                'zipcode' => '67000',
+                'city' => 'Strasbourg',
+                'country' => 'France',
+                'lat' => 48.5734,
+                'lng' => 7.7521,
+                'description' => 'Hôtel au cœur de la Grande Île, patrimoine mondial de l\'UNESCO.',
+                'max_capacity' => 90,
+                'price_per_night' => 189.99,
+            ],
+            [
+                'name' => 'Montpellier University Hotel',
+                'address1' => '258 Place de la Comédie',
+                'address2' => null,
+                'zipcode' => '34000',
+                'city' => 'Montpellier',
+                'country' => 'France',
+                'lat' => 43.6110,
+                'lng' => 3.8767,
+                'description' => 'Hôtel moderne près de l\'université et du centre historique.',
+                'max_capacity' => 110,
+                'price_per_night' => 169.99,
+            ],
+            [
+                'name' => 'Bordeaux Wine Hotel',
+                'address1' => '369 Quai des Chartrons',
+                'address2' => null,
+                'zipcode' => '33000',
+                'city' => 'Bordeaux',
+                'country' => 'France',
+                'lat' => 44.8378,
+                'lng' => -0.5792,
+                'description' => 'Hôtel thématique dédié au vin dans le quartier des Chartrons.',
+                'max_capacity' => 130,
+                'price_per_night' => 219.99,
+            ],
+            [
+                'name' => 'Lille Grand Place Hotel',
+                'address1' => '741 Place du Général de Gaulle',
+                'address2' => null,
+                'zipcode' => '59000',
+                'city' => 'Lille',
+                'country' => 'France',
+                'lat' => 50.6292,
+                'lng' => 3.0573,
+                'description' => 'Hôtel élégant sur la Grand Place de Lille.',
+                'max_capacity' => 95,
+                'price_per_night' => 159.99,
+            ],
+            [
+                'name' => 'Rennes Medieval Inn',
+                'address1' => '852 Rue du Chapitre',
+                'address2' => null,
+                'zipcode' => '35000',
+                'city' => 'Rennes',
+                'country' => 'France',
+                'lat' => 48.1173,
+                'lng' => -1.6778,
+                'description' => 'Auberge dans le centre médiéval de Rennes.',
+                'max_capacity' => 70,
+                'price_per_night' => 139.99,
+            ]
         ];
 
+        // Liste des vraies images d'hôtels disponibles (incluses dans le projet)
         $realHotelImages = [
             'hotel1.jpg',
             'hotel2.jpg', 
@@ -67,8 +171,7 @@ class HotelSeeder extends Seeder
         foreach ($hotels as $hotelData) {
             $hotel = \App\Models\Hotel::create($hotelData);
             
-            $imageCount = rand(2, 3);
-            for ($i = 0; $i < $imageCount; $i++) {
+            for ($i = 0; $i < 3; $i++) {
                 $randomImage = $realHotelImages[array_rand($realHotelImages)];
                 
                 $filename = 'hotel_' . $hotel->id . '_' . $i . '_' . time() . '.jpg';
