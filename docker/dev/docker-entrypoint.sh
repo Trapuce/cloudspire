@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+echo "🚀 Démarrage de CloudSpire Hotel API..."
+
+# Attendre un peu que MySQL soit prêt
+echo "⏳ Attente de la base de données..."
+sleep 10
+echo "✅ Continuation du démarrage..."
+
 # Créer le fichier d'environnement s'il n'existe pas
 if [ ! -f /var/www/.env ]; then
     echo "Création du fichier .env..."
@@ -71,20 +78,46 @@ EOF
     fi
 fi
 
-# Terminer l'installation de Composer
-#composer dump-autoload
+# Générer la clé d'application si elle n'existe pas
+if ! grep -q "APP_KEY=" /var/www/.env || grep -q "APP_KEY=$" /var/www/.env; then
+    echo " Génération de la clé d'application..."
+    php artisan key:generate --force
+fi
 
 # Créer les répertoires de stockage
+echo "Création des répertoires de stockage..."
 mkdir -p /var/www/storage/framework/sessions
 mkdir -p /var/www/storage/framework/views
 mkdir -p /var/www/storage/framework/cache
 mkdir -p /var/www/storage/framework/cache/data
 mkdir -p /var/www/storage/logs
+mkdir -p /var/www/storage/app/public
+mkdir -p /var/www/bootstrap/cache
 
 # Définir les permissions
+echo "Configuration des permissions..."
 chown -R www-data:www-data /var/www/storage
+chown -R www-data:www-data /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage
+chmod -R 775 /var/www/bootstrap/cache
 
-php artisan storage:link
+# Créer le lien symbolique pour le stockage
+echo "Création du lien symbolique de stockage..."
+php artisan storage:link || echo " Le lien de stockage existe déjà"
+
+# Exécuter les migrations
+echo "Exécution des migrations..."
+php artisan migrate --force || echo "Les migrations sont déjà à jour"
+
+# Vider le cache
+echo "Nettoyage du cache..."
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+echo "CloudSpire Hotel API est prêt!"
+echo "API disponible sur: http://localhost:8000"
+echo " Base de données: MySQL sur le port 3306"
 
 exec "$@"

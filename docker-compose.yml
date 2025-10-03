@@ -19,10 +19,17 @@ services:
         condition: service_healthy
     volumes:
       - ".:/var/www"
+      - storage_data:/var/www/storage
     ports:
       - "8000:8000"
     networks:
       - hotel_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   mysql:
     image: mysql:8.0
@@ -45,23 +52,25 @@ services:
       timeout: 3s
       retries: 10
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: hotel_frontend
-    restart: unless-stopped
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-    ports:
-      - "3000:3000"
-    networks:
-      - hotel_network
-    depends_on:
-      - api
+  # Frontend optionnel - commenté pour éviter les erreurs si le dossier n'existe pas
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: hotel_frontend
+  #   restart: unless-stopped
+  #   environment:
+  #     - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - hotel_network
+  #   depends_on:
+  #     - api
 
 volumes:
   mysql_data:
+  storage_data:
 
 networks:
   hotel_network:
