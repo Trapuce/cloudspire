@@ -1,6 +1,29 @@
-version: '3.8'
-
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hotel_api
+    restart: unless-stopped
+    working_dir: /var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=hotel_management
+      - DB_USERNAME=hotel_user
+      - DB_PASSWORD=hotel_password
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ".:/var/www"
+    ports:
+      - "8000:8000"
+    networks:
+      - hotel_network
+
   mysql:
     image: mysql:8.0
     container_name: hotel_mysql
@@ -16,52 +39,12 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - hotel_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: hotel_api
-    restart: unless-stopped
-    working_dir: /var/www
-    environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - APP_KEY=base64:your-app-key-here
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=hotel_management
-      - DB_USERNAME=hotel_user
-      - DB_PASSWORD=hotel_password
-    volumes:
-      - ./:/var/www
-      - ./storage/app/public:/var/www/storage/app/public
-      - /var/www/vendor
-    depends_on:
-      - mysql
-    ports:
-      - "8000:8000"
-    networks:
-      - hotel_network
-
-
-
-  nginx:
-    image: nginx:alpine
-    container_name: hotel_nginx
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    volumes:
-      - ./:/var/www
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - api
-    networks:
-      - hotel_network
-
-  
   frontend:
     build:
       context: ./frontend
@@ -72,11 +55,10 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api
     ports:
       - "3000:3000"
-    depends_on:
-      - nginx
     networks:
       - hotel_network
-
+    depends_on:
+      - api
 
 volumes:
   mysql_data:

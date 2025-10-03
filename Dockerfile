@@ -1,40 +1,51 @@
-FROM php:8.2-fpm-bookworm
+FROM php:8.3-fpm-alpine
 
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    mysql-client \
+    oniguruma-dev \
     libxml2-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    bash \
+    curl
+
+RUN docker-php-ext-install \
+    bcmath \
+    ctype \
+    fileinfo \
+    mbstring \
+    pdo_mysql \
+    xml \
+    pdo
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+ENV APP_ENV=local
 WORKDIR /var/www
 
 COPY . .
 
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
+RUN composer install --no-interaction --optimize-autoloader
 
-RUN composer install --no-dev --optimize-autoloader
+COPY docker/dev/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/dev/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/dev/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN php artisan key:generate
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/framework/cache/data \
+    storage/logs \
+    bootstrap/cache
 
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www
+RUN chmod -R 775 /var/www/storage
 
-RUN mkdir -p /var/www/storage/app/public \
-    && mkdir -p /var/www/storage/framework/cache \
-    && mkdir -p /var/www/storage/framework/sessions \
-    && mkdir -p /var/www/storage/framework/views \
-    && mkdir -p /var/www/bootstrap/cache
+COPY docker/dev/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
