@@ -128,7 +128,6 @@ class HotelController extends Controller
     public function show(string $id):JsonResponse
     {
         try {
-            // Validation de l'ID
             if (!is_numeric($id) || $id <= 0) {
                 return response()->json([
                     'success' => false,
@@ -167,7 +166,6 @@ class HotelController extends Controller
     public function update(UpdateHotelRequest $request, string $id):JsonResponse
     {
          try {
-            // Validation de l'ID
             if (!is_numeric($id) || $id <= 0) {
                 return response()->json([
                     'success' => false,

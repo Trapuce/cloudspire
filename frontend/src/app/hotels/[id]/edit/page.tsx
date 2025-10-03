@@ -69,6 +69,7 @@ export default function EditHotelPage() {
         type: "success",
         duration: 4000,
       })
+      router.push(`/hotels/${hotelId}`)
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message || err?.message || "Erreur lors de la mise à jour"
       setError(errorMessage)

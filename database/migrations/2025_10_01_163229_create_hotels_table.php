@@ -25,6 +25,9 @@ return new class extends Migration
             $table->integer('max_capacity')->unsigned(); 
             $table->decimal('price_per_night', 10, 2)->unsigned(); 
             $table->timestamps();
+
+            $table->index(['name', 'city']);
+            $table->index('country');
         });
     }
 

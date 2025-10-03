@@ -23,7 +23,7 @@ class HotelPictureFactory extends Factory
         return [
             'hotel_id' => \App\Models\Hotel::factory(),
             'filepath' => 'hotels/'.$filename,
-            'filesize' => $this->faker->numberBetween(100000, 5000000), // 100KB to 5MB
+            'filesize' => $this->faker->numberBetween(100000, 5000000), 
             'position' => $this->faker->numberBetween(0, 10),
         ];
     }

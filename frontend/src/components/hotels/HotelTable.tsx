@@ -39,7 +39,7 @@ export function HotelTable({
     <Table.Root size="sm">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader>📷</Table.ColumnHeader>
+          <Table.ColumnHeader></Table.ColumnHeader>
           <Table.ColumnHeader
             cursor="pointer"
             onClick={() => onSort("name")}
