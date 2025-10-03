@@ -90,7 +90,6 @@ export default function EditHotelPage() {
 
     const file = files[0]
 
-    // Validation du fichier
     if (!file.type.startsWith('image/')) {
       toaster.create({
         title: "Format non supporté",
@@ -101,7 +100,7 @@ export default function EditHotelPage() {
       return
     }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB
+    if (file.size > 10 * 1024 * 1024) { 
       toaster.create({
         title: "Fichier trop volumineux",
         description: "La taille maximale autorisée est de 10MB. Veuillez choisir un fichier plus petit.",

@@ -105,8 +105,8 @@ export default function HotelsPage() {
     if (hotel.pictures && hotel.pictures.length > 0) {
       return hotel.pictures[0].url;
     }
-    //return "/placeholder-hotel.svg"; 
-    return null ;
+    return "/placeholder-hotel.svg"; 
+   
   };
 
   const handleView = (hotel: Hotel) => {

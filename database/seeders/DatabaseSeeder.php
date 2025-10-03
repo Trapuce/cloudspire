@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Créer un utilisateur de test s'il n'existe pas
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [

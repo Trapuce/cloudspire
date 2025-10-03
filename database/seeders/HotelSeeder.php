@@ -96,7 +96,6 @@ class HotelSeeder extends Seeder
            
         ];
 
-        // Liste des vraies images d'hôtels disponibles (incluses dans le projet)
         $realHotelImages = [
             'hotel1.jpg',
             'hotel2.jpg', 
