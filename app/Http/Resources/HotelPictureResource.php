@@ -20,7 +20,8 @@ class HotelPictureResource extends JsonResource
             'filepath' => $this->filepath,
             'filesize' => $this->filesize,
             'position' => $this->position,
-            'url' => asset('storage/' . $this->filepath),
+           // 'url' => asset('storage/' . $this->filepath),
+            'url' => url('storage/' . $this->filepath),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
