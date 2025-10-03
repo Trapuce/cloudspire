@@ -1,5 +1,6 @@
 FROM php:8.2-fpm-bookworm
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -19,11 +20,14 @@ WORKDIR /var/www
 
 COPY composer.json composer.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader
 
 COPY . .
 
-RUN composer dump-autoload --optimize
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
+
+RUN php artisan key:generate
 
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
