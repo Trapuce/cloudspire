@@ -18,14 +18,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY composer.json composer.lock ./
-
-RUN composer install --no-dev --optimize-autoloader
-
 COPY . .
 
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
+RUN composer install --no-dev --optimize-autoloader
 
 RUN php artisan key:generate
 
