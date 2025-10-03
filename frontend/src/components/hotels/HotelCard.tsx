@@ -50,9 +50,9 @@ export function HotelCard({
           height="100%"
           objectFit="cover"
           loading="lazy"
-          onError={(e) => {
-            e.currentTarget.src = "/placeholder-hotel.svg"
-          }}
+          // onError={(e) => {
+          //   e.currentTarget.src = "/placeholder-hotel.svg"
+          // }}
         />
         <Box
           position="absolute"

@@ -75,9 +75,9 @@ export function HotelTable({
                 objectFit="cover"
                 alt={`Photo de ${hotel.name}`}
                 loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder-hotel.svg"
-                }}
+                // onError={(e) => {
+                //   e.currentTarget.src = "/placeholder-hotel.svg"
+                // }}
               />
             </Table.Cell>
             <Table.Cell>
