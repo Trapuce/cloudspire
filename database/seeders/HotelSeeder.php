@@ -211,18 +211,39 @@ class HotelSeeder extends Seeder
             ]
         ];
 
+        $realHotelImages = [
+            'hotel1.jpg',
+            'hotel2.jpg', 
+            'hotel3.jpg',
+            'hotel4.jpg',
+            'hotel5.jpg',
+        ];
+
         foreach ($hotels as $hotelData) {
             $hotel = \App\Models\Hotel::create($hotelData);
             
-            // Créer 2-3 images fictives pour chaque hôtel
             $imageCount = rand(2, 3);
             for ($i = 0; $i < $imageCount; $i++) {
-                \App\Models\HotelPicture::create([
-                    'hotel_id' => $hotel->id,
-                    'filepath' => 'hotels/hotel_' . $hotel->id . '_' . $i . '_' . time() . '.jpg',
-                    'filesize' => rand(100000, 500000),
-                    'position' => $i,
-                ]);
+                $randomImage = $realHotelImages[array_rand($realHotelImages)];
+                
+                $filename = 'hotel_' . $hotel->id . '_' . $i . '_' . time() . '.jpg';
+                $filepath = 'hotels/' . $filename;
+                
+                $sourcePath = public_path('images/hotels/' . $randomImage);
+                $destinationPath = storage_path('app/public/hotels/' . $filename);
+                
+                if (File::exists($sourcePath)) {
+                    File::copy($sourcePath, $destinationPath);
+                    
+                    $filesize = File::size($destinationPath);
+                    
+                    \App\Models\HotelPicture::create([
+                        'hotel_id' => $hotel->id,
+                        'filepath' => $filepath,
+                        'filesize' => $filesize,
+                        'position' => $i,
+                    ]);
+                }
             }
         }
     }
