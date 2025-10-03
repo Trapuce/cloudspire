@@ -7,7 +7,8 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libxml2-dev \
     bash \
-    curl
+    curl \
+    git
 
 RUN docker-php-ext-install \
     bcmath \
