@@ -55,10 +55,16 @@ RUN php artisan storage:link || true
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
     echo 'echo "Démarrage de Laravel..."' >> /start.sh && \
+    echo 'echo "🔧 Création du fichier .env..."' >> /start.sh && \
+    echo 'if [ ! -f .env ]; then' >> /start.sh && \
+    echo '  cp .env.example .env' >> /start.sh && \
+    echo '  php artisan key:generate' >> /start.sh && \
+    echo '  echo "✅ Fichier .env créé avec MySQL"' >> /start.sh && \
+    echo 'fi' >> /start.sh && \
     echo 'echo " Attente de la base de données..."' >> /start.sh && \
     echo 'echo "Attente de MySQL..."' >> /start.sh && \
     echo 'for i in {1..30}; do' >> /start.sh && \
-    echo '  if mysqladmin ping -h mysql -u root -prootpassword --silent; then' >> /start.sh && \
+    echo '  if mysqladmin ping -h mysql -u root -prootpassword --skip-ssl --silent; then' >> /start.sh && \
     echo '    echo "MySQL est prêt !"' >> /start.sh && \
     echo '    break' >> /start.sh && \
     echo '  fi' >> /start.sh && \
