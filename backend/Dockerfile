@@ -55,17 +55,29 @@ RUN php artisan storage:link || true
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'set -e' >> /start.sh && \
     echo 'echo "Démarrage de Laravel..."' >> /start.sh && \
+    echo 'echo " Attente de la base de données..."' >> /start.sh && \
+    echo 'echo "Attente de MySQL..."' >> /start.sh && \
+    echo 'for i in {1..30}; do' >> /start.sh && \
+    echo '  if mysqladmin ping -h mysql -u root -prootpassword --silent; then' >> /start.sh && \
+    echo '    echo "MySQL est prêt !"' >> /start.sh && \
+    echo '    break' >> /start.sh && \
+    echo '  fi' >> /start.sh && \
+    echo '  echo "Tentative $i/30..."' >> /start.sh && \
+    echo '  sleep 2' >> /start.sh && \
+    echo 'done' >> /start.sh && \
     echo 'composer install --no-interaction --optimize-autoloader --no-dev' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/logs' >> /start.sh && \
     echo 'chown -R www-data:www-data /var/www/storage' >> /start.sh && \
     echo 'chmod -R 775 /var/www/storage' >> /start.sh && \
-    echo 'echo " Configuration de la base de données..."' >> /start.sh && \
+    echo 'echo "🗄️ Configuration de la base de données..."' >> /start.sh && \
+    echo 'php artisan config:cache' >> /start.sh && \
+    echo 'php artisan route:cache' >> /start.sh && \
     echo 'php artisan migrate --force' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/app/public/hotels' >> /start.sh && \
     echo 'chown -R www-data:www-data /var/www/storage/app/public/hotels' >> /start.sh && \
     echo 'php artisan db:seed --force' >> /start.sh && \
     echo 'php artisan storage:link' >> /start.sh && \
-    echo 'echo "Laravel prêt !"' >> /start.sh && \
+    echo 'echo " Laravel prêt !"' >> /start.sh && \
     echo 'php-fpm' >> /start.sh && \
     chmod +x /start.sh
 
