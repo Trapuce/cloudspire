@@ -26,7 +26,7 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-interaction --optimize-autoloader
+RUN composer install --no-interaction --optimize-autoloader --prefer-dist --no-dev
 
 COPY docker/dev/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/dev/php.ini /usr/local/etc/php/conf.d/custom.ini
@@ -43,7 +43,7 @@ RUN chown -R www-data:www-data /var/www
 RUN chmod -R 755 /var/www
 RUN chmod -R 775 /var/www/storage
 
-COPY docker/dev/docker-entrypoint.sh /usr/local/bin/
+COPY docker/dev/docker-entrypoint-simple.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
