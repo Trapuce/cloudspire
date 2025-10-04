@@ -42,32 +42,33 @@ RUN chown -R www-data:www-data /var/www \
     && chown -R www-data:www-data /var/www/storage/logs \
     && chmod -R 775 /var/www/storage/logs
 
-# Create health check endpoint
 RUN echo "<?php http_response_code(200); echo 'OK'; ?>" > /var/www/public/health.php
 
-# Generate Laravel key if not exists
 RUN if [ ! -f .env ]; then \
         cp .env.example .env && \
         php artisan key:generate; \
     fi
 
-# Create storage link for public access
 RUN php artisan storage:link || true
 
 # Create startup script
 RUN echo '#!/bin/bash' > /start.sh && \
+    echo 'set -e' >> /start.sh && \
+    echo 'echo "Démarrage de Laravel..."' >> /start.sh && \
     echo 'composer install --no-interaction --optimize-autoloader --no-dev' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/logs' >> /start.sh && \
     echo 'chown -R www-data:www-data /var/www/storage' >> /start.sh && \
     echo 'chmod -R 775 /var/www/storage' >> /start.sh && \
+    echo 'echo " Configuration de la base de données..."' >> /start.sh && \
     echo 'php artisan migrate --force' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/app/public/hotels' >> /start.sh && \
     echo 'chown -R www-data:www-data /var/www/storage/app/public/hotels' >> /start.sh && \
     echo 'php artisan db:seed --force' >> /start.sh && \
     echo 'php artisan storage:link' >> /start.sh && \
+    echo 'echo "Laravel prêt !"' >> /start.sh && \
     echo 'php-fpm' >> /start.sh && \
     chmod +x /start.sh
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+CMD ["/start.sh"]

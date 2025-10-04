@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Hotel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -92,7 +93,7 @@ class HotelControllerTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJson([
-                'message' => 'Hotel created successfully',
+                'message' => 'Hôtel créé avec succès',
                 'data' => [
                     'name' => $hotelData['name'],
                     'address1' => $hotelData['address1'],
@@ -120,7 +121,7 @@ class HotelControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Hotel updated successfully',
+                'message' => 'Hôtel mis à jour avec succès',
                 'data' => [
                     'id' => $hotel->id,
                     'name' => $updateData['name'],
@@ -143,7 +144,7 @@ class HotelControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Hotel deleted successfully'
+                'message' => 'Hôtel supprimé avec succès'
             ]);
 
         $this->assertDatabaseMissing('hotels', [
