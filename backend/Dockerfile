@@ -49,7 +49,10 @@ RUN echo '#!/bin/bash' > /start.sh && \
     echo 'composer install --no-interaction --optimize-autoloader --no-dev' >> /start.sh && \
     echo 'php artisan migrate --force' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/app/public/hotels' >> /start.sh && \
-    echo 'php artisan db:seed --force' >> /start.sh && \
+    echo 'if [ ! -f /var/www/.seeded ]; then' >> /start.sh && \
+    echo '    php artisan db:seed --force' >> /start.sh && \
+    echo '    touch /var/www/.seeded' >> /start.sh && \
+    echo 'fi' >> /start.sh && \
     echo 'php artisan storage:link' >> /start.sh && \
     echo 'php-fpm' >> /start.sh && \
     chmod +x /start.sh
