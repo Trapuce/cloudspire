@@ -13,6 +13,11 @@ class HotelSeeder extends Seeder
      */
     public function run(): void
     {
+        // Vérifier s'il y a déjà des hôtels
+        if (\App\Models\Hotel::count() > 0) {
+            return;
+        }
+        
         $hotels = [
             [
                 'name' => 'Hotel Plaza Paris',

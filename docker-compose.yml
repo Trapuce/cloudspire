@@ -41,9 +41,9 @@ services:
       mysql:
         condition: service_healthy
     volumes:
-      - "./backend:/var/www"
       - storage_data:/var/www/storage
-      - seeded_data:/var/www
+      - seeded_data:/var/www/seeded
+      - "./backend:/var/www"
     networks:
       - cloudspire_network
     healthcheck:

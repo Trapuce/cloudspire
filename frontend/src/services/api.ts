@@ -89,7 +89,7 @@ export const hotelApi = {
   deletePicture: async (hotelId: number, pictureId: number): Promise<ApiResponse<null>> => {
     const response = await api.delete(`/hotels/${hotelId}/pictures/${pictureId}`);
     return response.data;
-  },
+  }
 };
 
 export default api;
