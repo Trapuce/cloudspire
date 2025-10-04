@@ -30,7 +30,10 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+    && chmod -R 755 /var/www/bootstrap/cache \
+    && mkdir -p /var/www/storage/logs \
+    && chown -R www-data:www-data /var/www/storage/logs \
+    && chmod -R 775 /var/www/storage/logs
 
 # Create health check endpoint
 RUN echo "<?php http_response_code(200); echo 'OK'; ?>" > /var/www/public/health.php
@@ -47,11 +50,14 @@ RUN php artisan storage:link || true
 # Create startup script
 RUN echo '#!/bin/bash' > /start.sh && \
     echo 'composer install --no-interaction --optimize-autoloader --no-dev' >> /start.sh && \
+    echo 'mkdir -p /var/www/storage/logs' >> /start.sh && \
+    echo 'chown -R www-data:www-data /var/www/storage' >> /start.sh && \
+    echo 'chmod -R 775 /var/www/storage' >> /start.sh && \
     echo 'php artisan migrate --force' >> /start.sh && \
     echo 'mkdir -p /var/www/storage/app/public/hotels' >> /start.sh && \
-    echo 'if [ ! -f /var/www/.seeded ]; then' >> /start.sh && \
+    echo 'if [ ! -f /var/www/storage/.seeded ]; then' >> /start.sh && \
     echo '    php artisan db:seed --force' >> /start.sh && \
-    echo '    touch /var/www/.seeded' >> /start.sh && \
+    echo '    touch /var/www/storage/.seeded' >> /start.sh && \
     echo 'fi' >> /start.sh && \
     echo 'php artisan storage:link' >> /start.sh && \
     echo 'php-fpm' >> /start.sh && \
