@@ -1,26 +1,59 @@
 FROM php:8.2-fpm
 
-WORKDIR /var/www/html
-
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --fix-missing \
+    git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libzip-dev \
     zip \
     unzip \
-    git \
-    nano
+    libzip-dev \
+    libpq-dev \
+    default-mysql-client \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY . /var/www/html
+# Set working directory
+WORKDIR /var/www
 
-RUN chown -R www-data:www-data /var/www/html/storage
+# Copy application files
+COPY . .
+
+# Install PHP dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage \
+    && chmod -R 755 /var/www/bootstrap/cache
+
+# Create health check endpoint
+RUN echo "<?php http_response_code(200); echo 'OK'; ?>" > /var/www/public/health.php
+
+# Generate Laravel key if not exists
+RUN if [ ! -f .env ]; then \
+        cp .env.example .env && \
+        php artisan key:generate; \
+    fi
+
+# Create storage link for public access
+RUN php artisan storage:link || true
+
+# Create startup script
+RUN echo '#!/bin/bash' > /start.sh && \
+    echo 'composer install --no-interaction --optimize-autoloader --no-dev' >> /start.sh && \
+    echo 'php artisan migrate --force' >> /start.sh && \
+    echo 'mkdir -p /var/www/storage/app/public/hotels' >> /start.sh && \
+    echo 'php artisan db:seed --force' >> /start.sh && \
+    echo 'php artisan storage:link' >> /start.sh && \
+    echo 'php-fpm' >> /start.sh && \
+    chmod +x /start.sh
+
+EXPOSE 9000
 
 CMD ["php-fpm"]
-
-EXPOSE 8000

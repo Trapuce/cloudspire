@@ -1,5 +1,5 @@
+
 services:
-  # Base de données MySQL
   mysql:
     image: mysql:8.0
     container_name: cloudspire_mysql
@@ -22,52 +22,65 @@ services:
       retries: 10
       start_period: 30s
 
-  # API Backend Laravel
   api:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: cloudspire_api
     restart: unless-stopped
     working_dir: /var/www
     environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=hotel_management
-      - DB_USERNAME=hotel_user
-      - DB_PASSWORD=hotel_password
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      APP_ENV: local
+      APP_DEBUG: true
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: hotel_management
+      DB_USERNAME: hotel_user
+      DB_PASSWORD: hotel_password
     depends_on:
       mysql:
         condition: service_healthy
     volumes:
       - "./backend:/var/www"
       - storage_data:/var/www/storage
-    ports:
-      - "8000:8000"
     networks:
       - cloudspire_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      test: ["CMD", "php", "-f", "/var/www/public/health.php"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+    command: ["/start.sh"]
 
-  # Frontend Next.js
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    container_name: cloudspire_frontend
+  # Nginx pour servir le backend
+  nginx:
+    image: nginx:alpine
+    container_name: cloudspire_nginx
     restart: unless-stopped
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    ports:
+      - "8000:80"
+    volumes:
+      - "./backend/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./backend:/var/www"
+      - storage_data:/var/www/storage
     depends_on:
       api:
         condition: service_healthy
+    networks:
+      - cloudspire_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cloudspire_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    depends_on:
+      nginx:
+        condition: service_started
     ports:
       - "3000:3000"
     networks:

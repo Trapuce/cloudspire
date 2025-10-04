@@ -1,8 +1,17 @@
 FROM node:18-alpine
-RUN mkdir -p /app
+
 WORKDIR /app
-COPY . .
+
+# Copy package files first for better caching
+COPY package*.json ./
 RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the application
 RUN npm run build
+
 EXPOSE 3000
+
 CMD ["npm", "start"]
